@@ -9,11 +9,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
+        
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         let barView = BarView()
@@ -31,12 +27,7 @@ class ViewController: UIViewController {
         
         barView.items = [BarElement(title: "title", value: 100), BarElement(title: "title2", value: 90), BarElement(title: "title2", value: 80), BarElement(title: "title2", value: 70), BarElement(title: "title2", value: 60), BarElement(title: "title2", value: 50)]
         barView.showBars()
-
+        
     }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
-
 }
 

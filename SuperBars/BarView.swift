@@ -10,11 +10,11 @@ import UIKit
 import SnapKit
 
 class BarView: UIView {
-    var maxValue : UInt = 0
+    var maxValue : UInt = 1
     var items : Array<BarElement>?
-    
-    let viewOffset = 10
-    var viewsHeight = 2
+    var colors : Array<CGColor> = [UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.redColor().CGColor]
+    var viewOffset = 10
+    var viewsHeight = 3
     
     func showBars() {
         guard let safeItems = items else {
@@ -46,35 +46,62 @@ class BarView: UIView {
     
     private func itemBarView(item : BarElement) -> UIView {
         let barView = Bar()
+        barView.offset = CGFloat(self.viewOffset)
+        barView.colors = self.colors
         barView.value = item.value
         barView.maxValue = self.maxValue
         
         barView.sizeToFit()
         addSubview(barView)
         
-
-        
         return barView
     }
-
 }
 
 class Bar : UIView {
     var value : UInt = 0
     var maxValue : UInt = 1
+    var animationDuration : Double = 0.5
+    var offset : CGFloat = 10
+    var colors : Array<CGColor> = Array<CGColor>()
     
     override func layoutSubviews() {
-        let subView = UIView(frame: CGRect(x: self.bounds.origin.x, y: self.bounds.origin.y, width: 0.0, height: self.frame.height))
-        subView.backgroundColor = .blueColor()
-        self.addSubview(subView)
-        UIView.animateWithDuration(1.5) { () -> Void in
-            var subFrame = self.bounds
-            subFrame.size.width = (CGFloat(self.value) / CGFloat(self.maxValue)) * self.frame.width
-            subView.frame = subFrame
-        }
+        var subFrame = self.bounds
+        subFrame.size.width = (CGFloat(self.value) / CGFloat(self.maxValue)) * self.frame.width
+        
+        let gradient:CAGradientLayer = self.gradient(subFrame)
+        layer.insertSublayer(gradient, atIndex: 0)
+        self.animations(layer)
     }
     
-    
+    func gradient(frame:CGRect) -> CAGradientLayer {
+        let layer = CAGradientLayer()
+        layer.frame = frame
+
+        layer.startPoint = CGPointMake(0,0.5)
+        layer.endPoint = CGPointMake(1,0.5)
+
+        if colors.count > 0 {
+            layer.colors = colors
+        }
+
+        return layer
+    }
+
+    func animations(layer : CALayer) {
+        layer.anchorPoint = CGPointMake(0, 1.0);
+        let widthAnim = CABasicAnimation(keyPath: "transform.scale.x")
+        widthAnim.fromValue = 0
+        widthAnim.toValue = 1
+        widthAnim.fillMode = kCAFillModeBoth
+        widthAnim.duration = animationDuration
+        layer.addAnimation(widthAnim, forKey: "transform.scale.x")
+        
+        // update layer's frame
+        var frame = layer.frame
+        frame.origin.x = self.bounds.origin.x + offset
+        layer.frame = frame
+    }
 }
 
 class BarElement {
